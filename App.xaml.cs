@@ -1,17 +1,12 @@
-using Microsoft.Maui;
-using Microsoft.Maui.Controls;
-using HeatMapApp.Services;
-
 namespace HeatMapApp
 {
     public partial class App : Application
     {
-        public App(LocationService locationService, LocationDatabase database)
+        public App(MainPage mainPage)
         {
-            InitializeComponent();
-            MainPage = new MainPage(locationService, database);
+            InitializeComponent(); // This is generated from App.xaml
+
+            MainPage = new AppShell(); // or mainPage directly if you are not using Shell
         }
     }
 }
-
-
