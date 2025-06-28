@@ -1,7 +1,6 @@
-using Microsoft.Maui;
-using Microsoft.Maui.Hosting;
-using HeatMapApp;
 using HeatMapApp.Services;
+using Microsoft.Maui.Controls.Hosting;
+using Microsoft.Maui.Hosting;
 using System.IO;
 
 namespace HeatMapApp
@@ -20,14 +19,10 @@ namespace HeatMapApp
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 });
 
+            string dbPath = Path.Combine(FileSystem.AppDataDirectory, "locations.db3");
+            builder.Services.AddSingleton(new LocationDatabase(dbPath));
             builder.Services.AddSingleton<LocationService>();
-            builder.Services.AddSingleton<LocationDatabase>(_ =>
-            {
-                string dbPath = Path.Combine(FileSystem.AppDataDirectory, "locations.db3");
-                return new LocationDatabase(dbPath);
-            });
-
-            builder.Services.AddSingleton<App>();
+            builder.Services.AddSingleton<MainPage>();
 
             return builder.Build();
         }

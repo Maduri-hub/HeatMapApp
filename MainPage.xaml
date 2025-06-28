@@ -3,18 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
              x:Class="HeatMapApp.MainPage"
-             Title="Heat Map Tracker">
+             Title="MainView">
 
     <VerticalStackLayout>
-        <HorizontalStackLayout Padding="10" Spacing="20">
-            <Button Text="Add Test Locations" Clicked="OnAddTestLocationClicked"/>
-            <Button Text="Refresh" Clicked="OnRefreshClicked"/>
-        </HorizontalStackLayout>
-
+        <Button Text="Refresh Heatmap" Clicked="OnRefreshClicked" Margin="10"/>
         <maps:Map x:Name="MyMap"
                   WidthRequest="400"
                   HeightRequest="600"
                   VerticalOptions="FillAndExpand"
-                  HorizontalOptions="FillAndExpand"/>
+                  HorizontalOptions="FillAndExpand" />
     </VerticalStackLayout>
 </ContentPage>

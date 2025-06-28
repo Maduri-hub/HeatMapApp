@@ -1,129 +1,73 @@
 using Microsoft.Maui.Controls;
 using Microsoft.Maui.Controls.Maps;
 using Microsoft.Maui.Maps;
-using Microsoft.Maui.Devices.Sensors;
-using HeatMapApp.Services;
-using HeatMapApp.Models;
-using System.Threading.Tasks;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System;
-
-#if IOS
-using MapKit;
-using CoreGraphics;
-using UIKit;
-#endif
 
 namespace HeatMapApp
 {
     public partial class MainPage : ContentPage
     {
-        private readonly LocationService _locationService;
-        private readonly LocationDatabase _database;
-
-        public MainPage(LocationService locationService, LocationDatabase database)
+        public MainPage()
         {
             InitializeComponent();
-            _locationService = locationService;
-            _database = database;
-
-#if IOS
-            Loaded += async (_, _) =>
-            {
-                if (MyMap?.Handler?.PlatformView is MKMapView nativeMap)
-                {
-                    nativeMap.ShowsUserLocation = true;
-                }
-
-                await CenterMapOnSuwaneeAsync();
-                await RenderHeatMapAsync();
-                await DrawMovementPolylineAsync();
-            };
-#else
-            _ = CenterMapOnSuwaneeAsync();
-            _ = RenderHeatMapAsync();
-            _ = DrawMovementPolylineAsync();
-#endif
+            DrawHeatmap();
         }
 
-        private async Task CenterMapOnSuwaneeAsync()
+        private void OnRefreshClicked(object sender, EventArgs e)
         {
-            var center = new Location(33.9604, -84.1065); // Center between Suwanee and Decatur
-            var span = MapSpan.FromCenterAndRadius(center, Distance.FromKilometers(25));
-            MyMap.MoveToRegion(span);
-        }
-
-        private async Task RenderHeatMapAsync()
-        {
-            var locations = await _database.GetLocationsAsync();
-
-            var grouped = locations
-                .GroupBy(loc => new { Lat = Math.Round(loc.Latitude, 3), Lng = Math.Round(loc.Longitude, 3) });
-
             MyMap.MapElements.Clear();
+            DrawHeatmap();
+        }
 
-            foreach (var group in grouped)
+        private void DrawHeatmap()
+        {
+            var pathPoints = GetInterpolatedPoints();
+
+            foreach (var point in pathPoints)
             {
-                double intensity = group.Count();
-                float alpha = (float)Math.Min(0.2 + intensity * 0.1, 0.8);
-
                 var circle = new Circle
                 {
-                    Center = new Location(group.Key.Lat, group.Key.Lng),
-                    Radius = new Distance(150),
+                    Center = point,
+                    Radius = new Distance(80),
                     StrokeColor = Colors.Transparent,
-                    FillColor = Colors.Red.WithAlpha(alpha)
+                    FillColor = Colors.Blue.WithAlpha(0.6f)
                 };
-
                 MyMap.MapElements.Add(circle);
             }
+
+            // Center map between Suwanee and Decatur
+            var center = new Location(33.9, -84.0);
+            MyMap.MoveToRegion(MapSpan.FromCenterAndRadius(center, Distance.FromKilometers(25)));
         }
 
-        private async Task DrawMovementPolylineAsync()
+        private List<Location> GetInterpolatedPoints()
         {
-            var locations = await _database.GetLocationsAsync();
-
-            if (locations.Count < 2)
-                return;
-
-            var sorted = locations.OrderBy(l => l.Timestamp).ToList();
-
-            var polyline = new Polyline
+            var path = new List<Location>
             {
-                StrokeColor = Colors.Blue,
-                StrokeWidth = 3
+                new Location(34.0515, -84.0713),  // Suwanee
+                new Location(34.0029, -84.1446),  // Duluth
+                new Location(33.7748, -84.2963),  // Decatur
             };
 
-            foreach (var point in sorted)
+            var interpolated = new List<Location>();
+            const int segments = 30;
+
+            for (int i = 0; i < path.Count - 1; i++)
             {
-                polyline.Geopath.Add(new Location(point.Latitude, point.Longitude));
+                var start = path[i];
+                var end = path[i + 1];
+
+                for (int j = 0; j <= segments; j++)
+                {
+                    var lat = start.Latitude + (end.Latitude - start.Latitude) * j / segments;
+                    var lng = start.Longitude + (end.Longitude - start.Longitude) * j / segments;
+                    interpolated.Add(new Location(lat, lng));
+                }
             }
 
-            MyMap.MapElements.Add(polyline);
+            return interpolated;
         }
-
-        private async void OnAddTestLocationClicked(object sender, EventArgs e)
-        {
-            var testPoints = new List<LocationModel>
-            {
-                new LocationModel { Latitude = 34.0515, Longitude = -84.0713, Timestamp = DateTime.UtcNow.AddMinutes(-10) }, // Suwanee
-                new LocationModel { Latitude = 33.9860, Longitude = -84.0916, Timestamp = DateTime.UtcNow.AddMinutes(-5) }, // Duluth
-                new LocationModel { Latitude = 33.7748, Longitude = -84.2963, Timestamp = DateTime.UtcNow } // Decatur
-            };
-
-            foreach (var point in testPoints)
-            {
-                await _database.SaveLocationAsync(point);
-            }
-
-            await RenderHeatMapAsync();
-            await DrawMovementPolylineAsync();
-        }
-        private async void OnRefreshClicked(object sender, EventArgs e)
-        {
-            await RenderHeatMapAsync();
-        }
-
     }
 }
