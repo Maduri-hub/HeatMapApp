@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HeatMapApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a08a23e520597abf30fc5e61bfca31dbadbb50c8")]
 [assembly: System.Reflection.AssemblyProductAttribute("HeatMapApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HeatMapApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
