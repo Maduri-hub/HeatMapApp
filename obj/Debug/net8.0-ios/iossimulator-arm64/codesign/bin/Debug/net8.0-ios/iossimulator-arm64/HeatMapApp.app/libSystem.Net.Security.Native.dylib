@@ -1,0 +1,1 @@
+-v --force --timestamp=none --sign - /Users/lohithkrishna/Documents/HeatMapApp_iOS/bin/Debug/net8.0-ios/iossimulator-arm64/HeatMapApp.app/libSystem.Net.Security.Native.dylib

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:maps="clr-namespace:Microsoft.Maui.Controls.Maps;assembly=Microsoft.Maui.Controls.Maps"
+             x:Class="HeatMapApp.MainPage"
+             Title="Heat Map Tracker">
+
+    <VerticalStackLayout>
+        <HorizontalStackLayout Padding="10" Spacing="20">
+            <Button Text="Add Test Locations" Clicked="OnAddTestLocationClicked"/>
+            <Button Text="Refresh" Clicked="OnRefreshClicked"/>
+        </HorizontalStackLayout>
+
+        <maps:Map x:Name="MyMap"
+                  WidthRequest="400"
+                  HeightRequest="600"
+                  VerticalOptions="FillAndExpand"
+                  HorizontalOptions="FillAndExpand"/>
+    </VerticalStackLayout>
+</ContentPage>
