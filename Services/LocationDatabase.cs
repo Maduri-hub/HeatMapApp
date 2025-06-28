@@ -1,22 +1,34 @@
-using SQLite;
 using HeatMapApp.Models;
+using SQLite;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace HeatMapApp.Services
 {
     public class LocationDatabase
     {
-        private readonly SQLiteAsyncConnection _db;
+        private readonly SQLiteAsyncConnection _database;
 
         public LocationDatabase(string dbPath)
         {
-            _db = new SQLiteAsyncConnection(dbPath);
-            _db.CreateTableAsync<LocationModel>().Wait();
+            _database = new SQLiteAsyncConnection(dbPath);
+            _database.CreateTableAsync<LocationModel>().Wait();
         }
 
-        public Task<List<LocationModel>> GetLocationsAsync() =>
-            _db.Table<LocationModel>().OrderBy(l => l.Timestamp).ToListAsync();
+        public Task<List<LocationModel>> GetLocationsAsync()
+        {
+            return _database.Table<LocationModel>().OrderBy(x => x.Timestamp).ToListAsync();
+        }
 
-        public Task<int> SaveLocationAsync(LocationModel location) =>
-            _db.InsertAsync(location);
+        public Task<int> SaveLocationAsync(LocationModel location)
+        {
+            return _database.InsertAsync(location);
+        }
+
+        public Task<int> DeleteAllAsync()
+        {
+            return _database.DeleteAllAsync<LocationModel>();
+        }
     }
 }

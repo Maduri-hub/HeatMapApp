@@ -10,10 +10,11 @@ namespace HeatMapApp.Services
         {
             try
             {
-                return await Geolocation.Default.GetLocationAsync();
+                return await Geolocation.GetLastKnownLocationAsync();
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"Location error: {ex.Message}");
                 return null;
             }
         }
